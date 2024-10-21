@@ -14,4 +14,13 @@ public class ConcreteProxyTest {
         ConcreteClient client = new ConcreteClient(concreteLogic);
         client.execute();
     }
+
+    @Test
+    void addProxy() {
+        ConcreteLogic concreteLogic = new ConcreteLogic();
+        TimeProxy proxy = new TimeProxy(concreteLogic);
+        ConcreteClient client = new ConcreteClient(proxy);
+
+        client.execute();
+    }
 }
