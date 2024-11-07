@@ -13,6 +13,7 @@ import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 import java.lang.reflect.Method;
 
@@ -48,6 +49,24 @@ public class AdvisorTest {
 
         //직접 만든 Pointcut - MyPointCut() - 적용
         DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor(new MyPointCut(), new TimeAdvice());
+        proxyFactory.addAdvisor(advisor); // 프록시 팩토리에 어드바이저(포인트컷 + 어드바이스) 추가
+        ServiceInterface proxy = (ServiceInterface)proxyFactory.getProxy();
+
+        proxy.save();
+        proxy.find();
+    }
+
+    @Test
+    @DisplayName("스프링이 제공하는 포인트컷")
+    void advisorTest3() {
+        ServiceInterface target = new ServiceImpl();
+        ProxyFactory proxyFactory = new ProxyFactory(target);
+
+        //NameMatchMethodPointcut() - 메서드 이름 기반으로 매칭 (패턴 허용 save*, *save 등)
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("find");
+
+        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor(pointcut, new TimeAdvice());
         proxyFactory.addAdvisor(advisor); // 프록시 팩토리에 어드바이저(포인트컷 + 어드바이스) 추가
         ServiceInterface proxy = (ServiceInterface)proxyFactory.getProxy();
 
